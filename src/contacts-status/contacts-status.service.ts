@@ -1,7 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ContactsStatusDto } from '../dto/contacts-status-dto';
-import { entity as Entities } from '@onpage-corp/onpage-domain-mysql';
-import { Metadata } from '../interfaces/metadata.interface';
+import { Injectable, Logger } from "@nestjs/common";
+import { ContactsStatusDto } from "../dto/contacts-status-dto";
+import { entity as Entities } from "@onpage-corp/onpage-domain-mysql";
+import { Metadata } from "../interfaces/metadata.interface";
 
 @Injectable()
 export class ContactsStatusService {
@@ -18,7 +18,7 @@ export class ContactsStatusService {
    */
   public async getAccountsStatusV1(
     enterpriseId: number,
-    search: string = '',
+    search: string = "",
     offset: number = 0,
     limit: number = 10
   ): Promise<ContactsStatusDto> {
@@ -39,8 +39,18 @@ export class ContactsStatusService {
       metadata
     };
 
-    const pushContactToResult = (account: any) => {
-      result.contactsStatus.loggedIn.push(account.pagerNumber);
+    const pushContactToResult = async (account: any) => {
+      const device = await account.Device;
+      this.logger.debug(`Account ${account.id} ${JSON.stringify(device?.pagerOn)}`);
+      if (!device) {
+        result.contactsStatus.loggedOff.push(account.id);
+      } else {
+        if (!device.pagerOn) {
+          result.contactsStatus.pagerOff.push(account.id);
+        } else {
+          result.contactsStatus.loggedIn.push(account.id);
+        }
+      }
     };
 
     const Account = Entities.sequelize.models.Account;
@@ -50,10 +60,14 @@ export class ContactsStatusService {
         active: true,
         deleted: false
       },
+      include: {
+        model: Entities.sequelize.models.Device,
+        required: false
+      },
       offset: offset * limit
     });
 
-    if (!(search && search.trim() === '')) {
+    if (search && search.trim() !== "") {
       accounts = accounts.filter(
         (account) =>
           account.pagerNumber.toLowerCase().includes(search.toLowerCase()) ||
@@ -63,11 +77,9 @@ export class ContactsStatusService {
       );
     }
 
-    accounts.forEach((account) => pushContactToResult(account));
-
-    this.logger.debug(
-      `getAccountsStatusV1: ${result.contactsStatus.loggedIn.length} loggedIn, ${result.contactsStatus.loggedOff.length} loggedOff, ${result.contactsStatus.pagerOff.length} pagerOff`
-    );
+    for (const account of accounts) {
+      await pushContactToResult(account);
+    }
 
     return result;
   }
