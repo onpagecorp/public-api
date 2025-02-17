@@ -1,0 +1,1180 @@
+openapi: 3.0.0
+paths:
+  /administrators:
+    get:
+      operationId: AdministratorsController_getContactsV1
+      parameters:
+        - name: search
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: offset
+          required: false
+          in: query
+          schema:
+            default: 0
+            example: 0
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 50
+            example: 50
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdministratorsDto"
+      security: &a1
+        - bearer: []
+      summary: Get list of administrators
+      tags: &a2
+        - Administrators
+  /administrators/{id}:
+    get:
+      operationId: AdministratorsController_getContactV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DispatcherDto"
+        "204":
+          description: Template deleted successfully
+        "404":
+          description: Template requested not found
+      security: *a1
+      summary: Get administrator by ID
+      tags: *a2
+  /attachments:
+    post:
+      operationId: AttachmentsController_createAttachmentV1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateAttachmentDto"
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateAttachmentDto"
+      security: &a3
+        - bearer: []
+      summary: Upload new attachment
+      tags: &a4
+        - Attachments
+  /attachments/{id}:
+    get:
+      operationId: AttachmentsController_getAttachmentV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttachmentDto"
+        "404":
+          description: Attachment not found
+      security: *a3
+      summary: Get an attachment
+      tags: *a4
+    delete:
+      operationId: AttachmentsController_deleteAttachmentV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Attachment deleted successfully
+        "404":
+          description: Attachment requested not found
+      security: *a3
+      summary: Delete an attachment
+      tags: *a4
+  /contacts:
+    get:
+      operationId: ContactsController_getContactsV1
+      parameters:
+        - name: search
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: offset
+          required: false
+          in: query
+          schema:
+            default: 0
+            example: 0
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 50
+            example: 50
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactsDto"
+      security: &a5
+        - bearer: []
+      summary: Get list of contacts
+      tags: &a6
+        - Contacts
+    post:
+      operationId: ContactsController_createContact
+      parameters: []
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+      security: *a5
+      summary: Create new contact
+      tags: *a6
+  /contacts/{id}:
+    get:
+      operationId: ContactsController_getContactV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactDto"
+      security: *a5
+      summary: Get contact by ID
+      tags: *a6
+    put:
+      operationId: ContactsController_updateContactV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+      security: *a5
+      summary: Update a contact
+      tags: *a6
+    delete:
+      operationId: ContactsController_deleteContactV1
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+      security: *a5
+      summary: Delete a contact
+      tags: *a6
+  /contacts-groups:
+    get:
+      operationId: ContactGroupsControllerV1_getPagesV1
+      parameters:
+        - name: search
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: offset
+          required: false
+          in: query
+          schema:
+            default: 0
+            example: 0
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 50
+            example: 50
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactGroupsDto"
+      security: &a7
+        - bearer: []
+      summary: Get list of contact's groups
+      tags: &a8
+        - Contacts
+    post:
+      operationId: ContactGroupsControllerV1_sendPagesV1
+      parameters: []
+      requestBody:
+        required: true
+        description: send Page DTO
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PageSendDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageDto"
+      security: *a7
+      summary: Send page
+      tags: *a8
+  /contacts-groups/{id}:
+    get:
+      operationId: ContactGroupsControllerV1_getPageByIdV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactDto"
+      security: *a7
+      summary: Get Page by ID
+      tags: *a8
+  /pages:
+    get:
+      operationId: PagesControllerV1_getPagesV1
+      parameters:
+        - name: offset
+          required: false
+          in: query
+          schema:
+            default: 0
+            example: 0
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 50
+            example: 50
+            type: number
+        - name: search
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagesListDto"
+      security: &a9
+        - bearer: []
+      summary: Get list of pages
+      tags: &a10
+        - Pages
+    post:
+      operationId: PagesControllerV1_sendPagesV1
+      parameters: []
+      requestBody:
+        required: true
+        description: send Page DTO
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PageSendDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageDto"
+      security: *a9
+      summary: Send page
+      tags: *a10
+  /pages/{id}:
+    get:
+      operationId: PagesControllerV1_getPageByIdV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactDto"
+      security: *a9
+      summary: Get Page by ID
+      tags: *a10
+  /settings:
+    get:
+      operationId: SettingsController_getSettingsV1
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SettingsDto"
+      summary: Get enterprise settings
+      tags: &a11
+        - Settings
+    patch:
+      operationId: SettingsController_patchSettingsV1
+      parameters: []
+      requestBody:
+        required: true
+        description: Settings partial data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingsUpdateDto"
+      responses:
+        "204":
+          description: Settings patched successfully
+        "403":
+          description: Forbidden
+      summary: Patch settings
+      tags: *a11
+  /templates:
+    get:
+      operationId: TemplatesController_getContactsV1
+      parameters:
+        - name: search
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: offset
+          required: false
+          in: query
+          schema:
+            default: 0
+            example: 0
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 50
+            example: 50
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplatesDto"
+      security: &a12
+        - bearer: []
+      summary: Get list of templates
+      tags: &a13
+        - Templates
+    post:
+      operationId: TemplatesController_createTemplate
+      parameters: []
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+      security: *a12
+      summary: Create new template
+      tags: *a13
+  /templates/{id}:
+    get:
+      operationId: TemplatesController_getTemplateV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplateDto"
+      security: *a12
+      summary: Get template by ID
+      tags: *a13
+    patch:
+      operationId: TemplatesController_updateTemplateV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Template ID
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Template partial data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TemplateUpdateDto"
+      responses:
+        "200":
+          description: Template updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplateDto"
+      security: *a12
+      summary: Update a template
+      tags: *a13
+    delete:
+      operationId: TemplatesController_deleteTemplateV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Template ID
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Template deleted successfully
+        "404":
+          description: Template requested not found
+      security: *a12
+      summary: Delete a template
+      tags: *a13
+  /contacts-status:
+    get:
+      operationId: ContactsStatusController_getContactsStatusV1
+      parameters:
+        - name: search
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: offset
+          required: false
+          in: query
+          schema:
+            default: 0
+            example: 0
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 50
+            example: 50
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactsStatusDto"
+      security:
+        - bearer: []
+      summary: Get list of contacts by status
+      tags:
+        - Contacts
+info:
+  title: OnPage API
+  description: >-
+    OpenAPI definition for managing dispatching, pages, contacts,
+    administrators, templates, settings, and webhooks.
+
+
+    [📥 Download Swagger YAML](./swagger.yaml)
+  version: "1.0"
+  contact: {}
+tags:
+  - name: API
+    description: ""
+servers:
+  - url: http://127.0.0.1:3003
+    description: Development Server
+  - url: https://public-api.onsetmobile.com
+    description: Sandbox Server
+  - url: https://public-api.onpage.com
+    description: Production Server
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    DispatcherPermissions:
+      type: object
+      properties:
+        createEscalation:
+          type: boolean
+          description: Can create escalation group
+          default: false
+        groupCreate:
+          type: boolean
+          description: Can create group
+          default: false
+        contactDelete:
+          type: boolean
+          description: Can delete contact
+          default: false
+        contactEdit:
+          type: boolean
+          description: Can edit contact
+          default: false
+        contactAdd:
+          type: boolean
+          description: Can create contact
+          default: false
+        contactToGroup:
+          type: boolean
+          description: Can add contact a group
+          default: false
+        removeContactFromGroup:
+          type: boolean
+          description: an remove from a group
+          default: false
+        deleteGroup:
+          type: boolean
+          description: Can delete group
+          default: false
+        editGroup:
+          type: boolean
+          description: Can edit group
+          default: false
+        editEscalationGroup:
+          type: boolean
+          description: Can edit escalation group
+          default: false
+        viewSchedule:
+          type: boolean
+          description: Can view scheduler
+          default: false
+        editSchedule:
+          type: boolean
+          description: Can edit scheduler
+          default: false
+        viewReports:
+          type: boolean
+          description: Can login to reports
+          default: false
+    DispatcherDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Dispatcher ID
+        opid:
+          type: string
+          description: OnPage ID
+        firstName:
+          type: string
+          description: Dispatcher first name
+        lastName:
+          type: string
+          description: Dispatcher last name
+        email:
+          type: string
+          description: Dispatcher email address
+        phoneNumber:
+          type: string
+          description: Dispatcher phone number
+        groups:
+          description: Groups the dispatcher is member of
+          type: array
+          items:
+            type: number
+        superAdmin:
+          type: boolean
+          description: Super admin flag
+          default: false
+        permissions:
+          description: Dispatcher permissions
+          allOf:
+            - $ref: "#/components/schemas/DispatcherPermissions"
+      required:
+        - id
+        - opid
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+        - permissions
+    Metadata:
+      type: object
+      properties:
+        hasMoreData:
+          type: boolean
+      required:
+        - hasMoreData
+    AdministratorsDto:
+      type: object
+      properties:
+        administrators:
+          description: Array of administrators
+          type: array
+          items:
+            $ref: "#/components/schemas/DispatcherDto"
+        metadata:
+          description: Response metadata
+          allOf:
+            - $ref: "#/components/schemas/Metadata"
+      required:
+        - administrators
+        - metadata
+    CreateAttachmentDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Attachment ID
+      required:
+        - id
+    AttachmentDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Attachment ID
+        name:
+          type: string
+          description: Attachment file name
+        size:
+          type: number
+          description: Attachment size in bytes
+        data:
+          type: string
+          description: Attachment buffer
+      required:
+        - id
+        - name
+        - size
+        - data
+    ContactDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Account ID
+        opid:
+          type: string
+          description: OnPage ID
+        firstName:
+          type: string
+          description: Account first name
+        lastName:
+          type: string
+          description: Account last name
+        email:
+          type: string
+          description: Account email address
+        phoneNumber:
+          type: string
+          description: Account phone number
+        status:
+          type: string
+          description: Account OPID status
+        groups:
+          description: Groups the account is member of
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - opid
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+        - status
+    ContactsDto:
+      type: object
+      properties:
+        contacts:
+          description: Array of contacts
+          type: array
+          items:
+            $ref: "#/components/schemas/ContactDto"
+        metadata:
+          description: Response metadata
+          allOf:
+            - $ref: "#/components/schemas/Metadata"
+      required:
+        - contacts
+        - metadata
+    ContactGroupMemberDto:
+      type: object
+      properties:
+        contactId:
+          type: number
+          description: Contact ID
+        order:
+          type: number
+          description: Escalation order
+          nullable: true
+      required:
+        - contactId
+    ESCALATION_INTERVAL_DTO:
+      type: string
+      enum:
+        - NONE
+        - 1 minute
+        - 2 minutes
+        - 3 minutes
+        - 5 minutes
+        - 10 minutes
+        - 15 minutes
+        - 20 minutes
+        - 25 minutes
+        - 30 minutes
+        - 35 minutes
+        - 40 minutes
+        - 45 minutes
+        - 50 minutes
+        - 55 minutes
+        - 1 hour
+    ESCALATION_FACTOR:
+      type: string
+      enum:
+        - NONE
+        - DELIVERED
+        - READ
+        - REPLIED
+    GroupFailOverDto:
+      type: object
+      properties:
+        includeOriginalMessage:
+          type: boolean
+          description: Fail over includes origin al message
+        emails:
+          description: Fail over to emails list
+          type: array
+          items:
+            type: string
+        contacts:
+          description: Fail over to contacts list
+          type: array
+          items:
+            type: number
+        groups:
+          description: Fail over to contacts' groups list
+          type: array
+          items:
+            type: number
+      required:
+        - includeOriginalMessage
+        - emails
+    ContactGroupDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Group ID
+        opid:
+          type: string
+          description: OnPage ID (OPID)
+        name:
+          type: string
+          description: Name
+        contacts:
+          description: Contacts of the group
+          type: array
+          items:
+            $ref: "#/components/schemas/ContactGroupMemberDto"
+        escalation:
+          type: boolean
+          description: Escalation flag
+        escalationInterval:
+          description: Escalation interval
+          allOf:
+            - $ref: "#/components/schemas/ESCALATION_INTERVAL_DTO"
+        escalationFactor:
+          description: Escalation factor
+          allOf:
+            - $ref: "#/components/schemas/ESCALATION_FACTOR"
+        failOver:
+          description: Fail over parameters
+          allOf:
+            - $ref: "#/components/schemas/GroupFailOverDto"
+      required:
+        - id
+        - opid
+        - name
+        - contacts
+        - escalation
+    ContactGroupsDto:
+      type: object
+      properties:
+        contacts:
+          description: Array of groups
+          type: array
+          items:
+            $ref: "#/components/schemas/ContactGroupDto"
+        metadata:
+          description: Response metadata
+          allOf:
+            - $ref: "#/components/schemas/Metadata"
+      required:
+        - contacts
+        - metadata
+    PagePriority:
+      type: string
+      enum:
+        - HIGH
+        - LOW
+    PageSendDto:
+      type: object
+      properties:
+        chatId:
+          type: number
+          description: Chat ID
+        subject:
+          type: string
+          description: Subject
+        body:
+          type: string
+          description: Body
+        priority:
+          description: Priority
+          default: HIGH
+          allOf:
+            - $ref: "#/components/schemas/PagePriority"
+        recipients:
+          description: Recipients' OPIDs
+          type: array
+          items:
+            type: string
+        replies:
+          description: Possible replies
+          type: array
+          items:
+            type: string
+        attachments:
+          description: Attachments ID's list
+          type: array
+          items:
+            type: string
+        callbackUri:
+          type: string
+          description: Callback URI
+      required:
+        - chatId
+        - subject
+        - priority
+        - recipients
+    PageFromDto:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type
+          enum:
+            - EMAIL
+            - DISPATCHER
+            - ONPAGE
+            - WEB
+            - ACCOUNT
+            - API
+            - PHONE
+            - WCTP
+            - SNPP
+        caption:
+          type: string
+          description: Caption
+        value:
+          type: object
+          description: Value
+      required:
+        - type
+        - caption
+        - value
+    RecipientDto:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type
+          enum:
+            - dispatcher
+            - email
+            - opid
+            - system
+        caption:
+          type: string
+          description: Caption
+        value:
+          type: string
+          description: Type
+      required:
+        - type
+        - caption
+        - value
+    PageDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Page ID
+        chatId:
+          type: number
+          description: Chat ID
+        from:
+          description: Sender
+          allOf:
+            - $ref: "#/components/schemas/PageFromDto"
+        subject:
+          type: string
+          description: Subject
+        body:
+          type: string
+          description: Body
+        priority:
+          description: Priority
+          default: HIGH
+          allOf:
+            - $ref: "#/components/schemas/PagePriority"
+        recipients:
+          description: Recipients
+          type: array
+          items:
+            $ref: "#/components/schemas/RecipientDto"
+        created:
+          type: string
+          description: Created at
+        replies:
+          description: Possible replies
+          type: array
+          items:
+            type: string
+        attachments:
+          description: Attachments
+          type: array
+          items:
+            type: string
+        callbackUri:
+          type: string
+          description: Callback URI
+      required:
+        - id
+        - chatId
+        - from
+        - subject
+        - priority
+        - recipients
+        - created
+    PagesListDto:
+      type: object
+      properties:
+        pages:
+          description: Array of pages
+          type: array
+          items:
+            $ref: "#/components/schemas/PageDto"
+        metadata:
+          description: Response metadata
+          allOf:
+            - $ref: "#/components/schemas/Metadata"
+      required:
+        - pages
+        - metadata
+    SettingsDto:
+      type: object
+      properties:
+        onCallReminders:
+          type: boolean
+          description: On-call reminders
+        twoFactorAuthentication:
+          type: boolean
+          description: F2A authentication
+        dispatcherSessionTimeout:
+          type: boolean
+          description: Dispatcher console time out in minutes
+      required:
+        - onCallReminders
+        - twoFactorAuthentication
+        - dispatcherSessionTimeout
+    SettingsUpdateDto:
+      type: object
+      properties:
+        onCallReminders:
+          type: boolean
+          description: On-call reminders
+        twoFactorAuthentication:
+          type: boolean
+          description: F2A authentication
+        dispatcherSessionTimeout:
+          type: boolean
+          description: Dispatcher console time out in minutes
+    TemplateDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Template ID
+        name:
+          type: string
+          description: Template name
+        subject:
+          type: string
+          description: Template subject
+        body:
+          type: string
+          description: Template body
+        predefinedReplies:
+          description: Predefined replies
+          type: array
+          items:
+            type: string
+        syncToDevice:
+          type: boolean
+          description: Sync to device flag
+      required:
+        - id
+        - name
+        - subject
+        - predefinedReplies
+    TemplatesDto:
+      type: object
+      properties:
+        templates:
+          description: List of templates
+          type: array
+          items:
+            $ref: "#/components/schemas/TemplateDto"
+        metadata:
+          description: Response metadata
+          allOf:
+            - $ref: "#/components/schemas/Metadata"
+      required:
+        - templates
+        - metadata
+    TemplateUpdateDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Template name
+          example: Template name
+        subject:
+          type: string
+          description: Template subject
+        body:
+          type: string
+          description: Template body
+        predefinedReplies:
+          description: Predefined replies
+          type: array
+          items:
+            type: string
+        syncToDevice:
+          type: boolean
+          description: Sync to device flag
+    ContactsStatusTypesDto:
+      type: object
+      properties:
+        loggedIn:
+          description: Array of logged in contacts
+          type: array
+          items:
+            type: string
+        loggedOff:
+          description: Array of logged out in contacts
+          type: array
+          items:
+            type: string
+        pagerOff:
+          description: Array of contacts with PAGER OFF
+          type: array
+          items:
+            type: string
+      required:
+        - loggedIn
+        - loggedOff
+        - pagerOff
+    ContactsStatusDto:
+      type: object
+      properties:
+        contactsStatus:
+          description: List of contacts by status
+          allOf:
+            - $ref: "#/components/schemas/ContactsStatusTypesDto"
+        metadata:
+          description: Response metadata
+          allOf:
+            - $ref: "#/components/schemas/Metadata"
+      required:
+        - contactsStatus
+        - metadata
