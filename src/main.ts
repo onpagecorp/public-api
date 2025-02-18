@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { writeFileSync } from 'fs';
+import { join } from 'path';
 import * as YAML from 'yaml';
 import * as packageJson from '../package.json';
 
@@ -46,7 +47,9 @@ async function bootstrap() {
   writeFileSync('./swagger.yaml', yamlString); // Saves YAML file
 
   // Setup Swagger UI
-  SwaggerModule.setup('api-docs', app, document);
+  SwaggerModule.setup('api-docs', app, document, {
+    customfavIcon: './favicon.ico'
+  });
 
   // Serve YAML file for download
   app.use('/swagger.yaml', (req, res) => {
@@ -55,6 +58,10 @@ async function bootstrap() {
 
   app.use('/version', (req, res) => {
     res.status(200).send(packageJson.version);
+  });
+
+  app.use('/favicon.ico', (req, res) => {
+    res.sendFile(join(__dirname, '..', 'public', 'favicon-32x32.png'));
   });
 
   await app.listen(process.env.PORT ?? 3003);
