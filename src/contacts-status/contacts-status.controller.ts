@@ -24,6 +24,11 @@ import { ContactsStatusService } from './contacts-status.service';
 @ApiTags('Contacts')
 @Controller('/')
 export class ContactsStatusController {
+  private static readonly statusFilterOptions = [
+    'logged-in',
+    'logged-out',
+    'pager-off'
+  ];
   private readonly logger = new Logger(ContactsStatusController.name);
 
   constructor(private readonly contactsStatusService: ContactsStatusService) {}
@@ -34,7 +39,17 @@ export class ContactsStatusController {
     tags: ['Contacts']
   })
   @ApiOkResponse({ type: ContactsStatusDto })
-  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String
+  })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    enum: ContactsStatusController.statusFilterOptions,
+    type: String
+  })
   @ApiQuery({
     name: 'offset',
     required: false,
@@ -53,6 +68,7 @@ export class ContactsStatusController {
   async getContactsStatusV1(
     @Req() request: Request,
     @Query('search') search?: string,
+    @Query('filter') filter?: string,
     @Query(
       'offset',
       new DefaultValuePipe(Constants.API_DEFAULT_OFFSET),
@@ -69,6 +85,7 @@ export class ContactsStatusController {
     return await this.contactsStatusService.getAccountsStatusV1(
       request['auth-enterprise-id'],
       search,
+      filter,
       offset,
       limit
     );

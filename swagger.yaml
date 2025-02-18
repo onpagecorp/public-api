@@ -523,6 +523,15 @@ paths:
           in: query
           schema:
             type: string
+        - name: filter
+          required: false
+          in: query
+          schema:
+            enum:
+              - logged-in
+              - logged-out
+              - pager-off
+            type: string
         - name: offset
           required: false
           in: query
