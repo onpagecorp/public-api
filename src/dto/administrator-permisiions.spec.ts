@@ -1,7 +1,7 @@
-import { DispatcherPermissions } from './dispatcher-permissions';
+import { AdministratorPermissions } from './administrator-permissions';
 
 describe('AdministratorPermisiions', () => {
   it('should be defined', () => {
-    expect(new DispatcherPermissions()).toBeDefined();
+    expect(new AdministratorPermissions()).toBeDefined();
   });
 });

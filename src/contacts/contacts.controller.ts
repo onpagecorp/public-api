@@ -1,8 +1,12 @@
 import {
+  Body,
   Controller,
   DefaultValuePipe,
   Delete,
   Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
   Logger,
   NotFoundException,
   NotImplementedException,
@@ -18,6 +22,9 @@ import { ContactDto } from '../dto/contact-dto';
 import { ContactsService } from './contacts.service';
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConflictResponse,
+  ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -26,6 +33,12 @@ import {
 import { Request } from 'express';
 import { Constants } from '../constants';
 import { ContactsDto } from '../dto/contacts-dto';
+import { ContactCreateDto } from '../dto/contact-create-dto';
+import {
+  EntityConflictError,
+  InternalServerError
+} from '../custom-error/custom-error';
+import { ContactCreateResponseDto } from '../dto/contact-create-response-dto';
 
 @ApiBearerAuth()
 @ApiTags('Contacts')
@@ -45,11 +58,10 @@ export class ContactsController {
   @ApiOkResponse({ type: ContactsDto })
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({
-    name: 'offset',
+    name: 'nextPageToken',
     required: false,
-    type: Number,
-    example: Constants.API_DEFAULT_OFFSET,
-    default: Constants.API_DEFAULT_OFFSET
+    type: String,
+    default: Constants.API_DEFAULT_NEXT_PAGE_TOKEN
   })
   @ApiQuery({
     name: 'limit',
@@ -63,11 +75,10 @@ export class ContactsController {
     @Req() request: Request,
     @Query('search') search?: string,
     @Query(
-      'offset',
-      new DefaultValuePipe(Constants.API_DEFAULT_OFFSET),
-      new ParseIntPipe()
+      'nextPageToken',
+      new DefaultValuePipe(Constants.API_DEFAULT_NEXT_PAGE_TOKEN)
     )
-    offset?: number,
+    nextPageToken?: string,
     @Query(
       'limit',
       new DefaultValuePipe(Constants.API_DEFAULT_LIMIT),
@@ -78,7 +89,7 @@ export class ContactsController {
     return await this.contactsService.findAllActive(
       request['auth-enterprise-id'],
       search,
-      offset,
+      nextPageToken,
       limit
     );
   }
@@ -87,8 +98,39 @@ export class ContactsController {
   @ApiOperation({
     summary: 'Create new contact'
   })
-  createContact(): string {
-    throw new NotImplementedException();
+  @ApiBody({ type: ContactCreateDto, description: 'Contact data' })
+  @HttpCode(201)
+  @ApiOkResponse({ type: ContactCreateResponseDto })
+  @ApiConflictResponse({ description: 'Contact already exists' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error' })
+  @Version('1')
+  async createContactV1(
+    @Req() request: Request,
+    @Body() contactCreateDto: ContactCreateDto
+  ): Promise<ContactCreateResponseDto> {
+    try {
+      const id = await this.contactsService.createContactV1(
+        request['auth-enterprise-id'],
+        contactCreateDto
+      );
+
+      return { contact: { id } };
+    } catch (e) {
+      this.logger.error('Failed to create contact', e.stack);
+      if (e instanceof EntityConflictError) {
+        throw new HttpException({ message: e.message }, HttpStatus.CONFLICT);
+      } else if (e instanceof InternalServerError) {
+        throw new HttpException(
+          { message: e.message },
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      } else {
+        throw new HttpException(
+          { statusCode: 500, message: 'Internal server error' },
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      }
+    }
   }
 
   @Get(':id')

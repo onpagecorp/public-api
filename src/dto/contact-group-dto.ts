@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { ContactGroupMemberDto } from './contact-group-member-dto';
 
 export enum ESCALATION_INTERVAL_DTO {
@@ -68,7 +68,7 @@ export class ContactGroupDto {
     required: true,
     type: Number
   })
-  id: bigint;
+  id: number;
 
   @ApiProperty({
     description: 'OnPage ID (OPID)',
@@ -80,7 +80,7 @@ export class ContactGroupDto {
   opid: string;
 
   @ApiProperty({
-    description: 'Name',
+    description: 'Group name',
     required: true,
     type: String
   })
@@ -89,11 +89,151 @@ export class ContactGroupDto {
   name: string;
 
   @ApiProperty({
+    description: 'Group description',
+    required: false,
+    type: String
+  })
+  @IsString()
+  description: string;
+
+  @ApiProperty({
     description: 'Contacts of the group',
     required: true,
     type: [ContactGroupMemberDto]
   })
   contacts: ContactGroupMemberDto[];
+
+  @ApiProperty({
+    description: 'Escalation flag',
+    required: true,
+    type: Boolean
+  })
+  @IsBoolean()
+  escalation?: boolean;
+
+  @ApiProperty({
+    description: 'Escalation interval',
+    required: false,
+    enum: ESCALATION_INTERVAL_DTO,
+    enumName: 'ESCALATION_INTERVAL_DTO'
+  })
+  escalationInterval?: ESCALATION_INTERVAL_DTO;
+
+  @ApiProperty({
+    description: 'Escalation factor',
+    required: false,
+    enum: ESCALATION_FACTOR_DTO,
+    enumName: 'ESCALATION_FACTOR'
+  })
+  escalationFactor?: ESCALATION_FACTOR_DTO;
+
+  @ApiProperty({
+    description: 'Fail over parameters',
+    required: false,
+    type: GroupFailOverDto
+  })
+  failOver?: GroupFailOverDto;
+}
+
+export class ContactGroupCreateDto {
+  @ApiProperty({
+    description: 'OnPage ID (OPID)',
+    required: true,
+    type: String
+  })
+  @IsNotEmpty()
+  @IsString()
+  opid: string;
+
+  @ApiProperty({
+    description: 'Group name',
+    required: true,
+    type: String
+  })
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @ApiProperty({
+    description: 'Group description',
+    required: false,
+    type: String
+  })
+  @IsString()
+  description: string;
+
+  @ApiProperty({
+    description: 'Contacts of the group',
+    required: true,
+    type: [ContactGroupMemberDto]
+  })
+  contacts?: ContactGroupMemberDto[];
+
+  @ApiProperty({
+    description: 'Escalation flag',
+    required: true,
+    type: Boolean
+  })
+  @IsBoolean()
+  escalation?: boolean;
+
+  @ApiProperty({
+    description: 'Escalation interval',
+    required: false,
+    enum: ESCALATION_INTERVAL_DTO,
+    enumName: 'ESCALATION_INTERVAL_DTO'
+  })
+  escalationInterval?: ESCALATION_INTERVAL_DTO;
+
+  @ApiProperty({
+    description: 'Escalation factor',
+    required: false,
+    enum: ESCALATION_FACTOR_DTO,
+    enumName: 'ESCALATION_FACTOR'
+  })
+  escalationFactor?: ESCALATION_FACTOR_DTO;
+
+  @ApiProperty({
+    description: 'Fail over parameters',
+    required: false,
+    type: GroupFailOverDto
+  })
+  failOver?: GroupFailOverDto;
+}
+
+export class ContactGroupUpdateDto {
+  @ApiProperty({
+    description: 'OnPage ID (OPID)',
+    required: true,
+    type: String
+  })
+  @IsNotEmpty()
+  @IsString()
+  opid: string;
+
+  @ApiProperty({
+    description: 'Group name',
+    required: true,
+    type: String
+  })
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @ApiProperty({
+    description: 'Group description',
+    required: false,
+    type: String
+  })
+  @IsString()
+  description: string;
+
+  @ApiProperty({
+    description: 'Contacts of the group',
+    required: true,
+    type: [ContactGroupMemberDto]
+  })
+  contacts?: ContactGroupMemberDto[];
 
   @ApiProperty({
     description: 'Escalation flag',

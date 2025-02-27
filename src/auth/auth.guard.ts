@@ -3,11 +3,15 @@ import {
   ExecutionContext,
   Injectable,
   Logger,
-  SetMetadata
+  SetMetadata,
+  UnauthorizedException
 } from '@nestjs/common';
+import {
+  entity as Entities,
+  newEncryptor as NewEncryptor
+} from '@onpage-corp/onpage-domain-mysql';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
-import { jwtConstants } from './constants';
 import { Request } from 'express';
 
 export const IS_PUBLIC_KEY = 'isPublic';
@@ -36,8 +40,30 @@ export class AuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       this.logger.debug(`There is not token provided.`);
-      // throw new UnauthorizedException();
+      throw new UnauthorizedException();
     }
+
+    const encryptedToken = NewEncryptor.encryptSymmetricData(token);
+    this.logger.debug(
+      `Searching for Token ${token}:${encryptedToken} is not valid.`
+    );
+
+    const PublicApiToken = Entities.sequelize.models.PublicApiToken;
+    const tokenExistAndActive = await PublicApiToken.findOne({
+      where: {
+        token: encryptedToken,
+        active: true
+      }
+    });
+    this.logger.debug(
+      `tokenExistAndActive:  ${JSON.stringify(tokenExistAndActive)}`
+    );
+    if (!tokenExistAndActive) {
+      this.logger.debug(`Token ${token} is not valid.`);
+      throw new UnauthorizedException();
+    }
+
+    /*
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret
@@ -49,12 +75,14 @@ export class AuthGuard implements CanActivate {
     } catch {
       this.logger.debug(`There was an error verifying the token.`);
       // throw new UnauthorizedException();
-    }
+    } 
+    */
 
     this.logger.debug(`Token is valid.`);
 
-    request['auth-enterprise-id'] = 166;
-    request['auth-dispatcher-id'] = 4207;
+    request['auth-enterprise-id'] = tokenExistAndActive.enterpriseId;
+    request['auth-dispatcher-id'] = -1;
+
     return true;
   }
 

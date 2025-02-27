@@ -1,34 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsPhoneNumber } from 'class-validator';
-import { DispatcherPermissions } from './dispatcher-permissions';
+import { AdministratorPermissions } from './administrator-permissions';
 
-export class DispatcherDto {
+export class AdministratorDto {
   @ApiProperty({
-    description: 'Dispatcher ID',
+    description: 'Administrator ID',
     required: true
   })
   id: number;
 
   @ApiProperty({
-    description: 'OnPage ID',
-    required: true
-  })
-  opid: string;
-
-  @ApiProperty({
-    description: 'Dispatcher first name',
+    description: 'Administrator first name',
     required: true
   })
   firstName: string;
 
   @ApiProperty({
-    description: 'Dispatcher last name',
+    description: 'Administrator last name',
     required: true
   })
   lastName: string;
 
   @ApiProperty({
-    description: 'Dispatcher email address',
+    description: 'Administrator email address',
     required: true
   })
   @IsNotEmpty()
@@ -36,7 +30,7 @@ export class DispatcherDto {
   email: string;
 
   @ApiProperty({
-    description: 'Dispatcher phone number',
+    description: 'Administrator phone number',
     required: true
   })
   @IsNotEmpty()
@@ -44,7 +38,7 @@ export class DispatcherDto {
   phoneNumber: string;
 
   @ApiProperty({
-    description: 'Groups the dispatcher is member of',
+    description: 'Groups the administrator is member of',
     required: false,
     type: Number,
     isArray: true
@@ -60,9 +54,9 @@ export class DispatcherDto {
   superAdmin: boolean;
 
   @ApiProperty({
-    description: 'Dispatcher permissions',
+    description: 'Administrator permissions',
     required: true,
-    type: DispatcherPermissions
+    type: AdministratorPermissions
   })
-  permissions: DispatcherPermissions;
+  permissions: AdministratorPermissions;
 }

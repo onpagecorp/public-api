@@ -12,7 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { AuthGuard } from './auth/auth.guard';
 import { ConfigModule } from '@nestjs/config';
-import { ContactGroupsControllerV1 } from './contacts-groups/contact-groups-controller.v1';
+import { ContactsGroupsControllerV1 } from './contacts-groups/contacts-groups-controller.v1';
 import { ContactsGroupsModule } from './contacts-groups/contacts-groups.module';
 import { AdministratorsService } from './administrators/administrators.service';
 import { TemplatesService } from './templates/templates.service';
@@ -26,6 +26,8 @@ import { GroupEntityModule } from './entity/group-entity.module';
 import { ContactsStatusController } from './contacts-status/contacts-status.controller';
 import { ContactsStatusService } from './contacts-status/contacts-status.service';
 import { ContactsStatusModule } from './contacts-status/contacts-status.module';
+import { AdministratorGroupsController } from './administrator-groups/administrator-groups.controller';
+import { AdministratorGroupsService } from './administrator-groups/administrator-groups.service';
 
 @Module({
   imports: [
@@ -54,11 +56,12 @@ import { ContactsStatusModule } from './contacts-status/contacts-status.module';
     AdministratorsController,
     AttachmentsController,
     ContactsController,
-    ContactGroupsControllerV1,
+    ContactsGroupsControllerV1,
     PagesControllerV1,
     SettingsController,
     TemplatesController,
-    ContactsStatusController
+    ContactsStatusController,
+    AdministratorGroupsController
   ],
   providers: [
     AppService,
@@ -72,7 +75,8 @@ import { ContactsStatusModule } from './contacts-status/contacts-status.module';
     AttachmentsService,
     SettingsService,
     PagesService,
-    ContactsStatusService
+    ContactsStatusService,
+    AdministratorGroupsService
   ]
 })
 export class AppModule {}

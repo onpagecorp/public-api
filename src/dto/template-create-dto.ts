@@ -1,13 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
-export class TemplateDto {
-  @ApiProperty({
-    description: 'Template ID',
-    required: true
-  })
-  id: number;
-
+export class TemplateCreateDto {
   @ApiProperty({
     description: 'Template name',
     required: true

@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContactGroupsControllerV1 } from './contact-groups-controller.v1';
+import { ContactsGroupsControllerV1 } from './contacts-groups-controller.v1';
 
 describe('ContactsGroupsController', () => {
-  let controller: ContactGroupsControllerV1;
+  let controller: ContactsGroupsControllerV1;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ContactGroupsControllerV1],
+      controllers: [ContactsGroupsControllerV1]
     }).compile();
 
-    controller = module.get<ContactGroupsControllerV1>(ContactGroupsControllerV1);
+    controller = module.get<ContactsGroupsControllerV1>(ContactsGroupsControllerV1);
   });
 
   it('should be defined', () => {

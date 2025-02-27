@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNull } from 'typeorm';
 
 export class ContactGroupMemberDto {
   @ApiProperty({
@@ -7,7 +6,7 @@ export class ContactGroupMemberDto {
     required: true,
     type: Number
   })
-  contactId: bigint;
+  contactId: number;
 
   @ApiProperty({
     description: 'Escalation order',

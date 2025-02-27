@@ -9,13 +9,12 @@ paths:
           in: query
           schema:
             type: string
-        - name: offset
+        - name: nextPageToken
           required: false
           in: query
           schema:
-            default: 0
-            example: 0
-            type: number
+            default: null
+            type: string
         - name: limit
           required: false
           in: query
@@ -35,6 +34,42 @@ paths:
       summary: Get list of administrators
       tags: &a2
         - Administrators
+    post:
+      operationId: AdministratorsController_createAdministratorV1
+      parameters: []
+      requestBody:
+        required: true
+        description: New administrator DTO
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdministratorCreateDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdministratorDto"
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdministratorDto"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              example: email must be an email
+        "406":
+          description: Administrator could not be created.
+          content:
+            application/json:
+              example: Administrator with email a@b.c already exist.
+      security: *a1
+      summary: Create new administrator
+      tags: *a2
   /administrators/{id}:
     get:
       operationId: AdministratorsController_getContactV1
@@ -50,13 +85,65 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DispatcherDto"
-        "204":
-          description: Template deleted successfully
+                $ref: "#/components/schemas/AdministratorDto"
         "404":
-          description: Template requested not found
+          description: Administrator requested not found
       security: *a1
       summary: Get administrator by ID
+      tags: *a2
+    delete:
+      operationId: AdministratorsController_deleteAdministratorV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Administrator ID
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Administrator deleted successfully.
+        "404":
+          description: Administrator requested not found.
+        "406":
+          description: Administrator could not be deleted.
+        "500":
+          description: Administrator could not be deleted.
+      security: *a1
+      summary: Delete a administrator
+      tags: *a2
+    put:
+      operationId: AdministratorsController_updateAdministratorV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Administrator ID
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Administrator DTO
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdministratorUpdateDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdministratorDto"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              example: email must be an email
+        "406":
+          description: Administrator could not be update.
+      security: *a1
+      summary: Update an administrator
       tags: *a2
   /attachments:
     post:
@@ -136,13 +223,12 @@ paths:
           in: query
           schema:
             type: string
-        - name: offset
+        - name: nextPageToken
           required: false
           in: query
           schema:
-            default: 0
-            example: 0
-            type: number
+            default: null
+            type: string
         - name: limit
           required: false
           in: query
@@ -163,15 +249,32 @@ paths:
       tags: &a6
         - Contacts
     post:
-      operationId: ContactsController_createContact
+      operationId: ContactsController_createContactV1
       parameters: []
+      requestBody:
+        required: true
+        description: Contact data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactCreateDto"
       responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactCreateResponseDto"
         "201":
           description: ""
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ContactCreateResponseDto"
+        "409":
+          description: Contact already exists
+        "500":
+          description: Internal server error
       security: *a5
       summary: Create new contact
       tags: *a6
@@ -227,20 +330,19 @@ paths:
       tags: *a6
   /contacts-groups:
     get:
-      operationId: ContactGroupsControllerV1_getPagesV1
+      operationId: ContactsGroupsControllerV1_getContactGroups
       parameters:
         - name: search
           required: false
           in: query
           schema:
             type: string
-        - name: offset
+        - name: nextPageToken
           required: false
           in: query
           schema:
-            default: 0
-            example: 0
-            type: number
+            default: null
+            type: string
         - name: limit
           required: false
           in: query
@@ -261,28 +363,28 @@ paths:
       tags: &a8
         - Contacts
     post:
-      operationId: ContactGroupsControllerV1_sendPagesV1
+      operationId: ContactsGroupsControllerV1_getContactGroupV1
       parameters: []
       requestBody:
         required: true
-        description: send Page DTO
+        description: Contact Group DTO
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PageSendDto"
+              $ref: "#/components/schemas/ContactGroupCreateDto"
       responses:
         "200":
           description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PageDto"
+                $ref: "#/components/schemas/ContactGroupDto"
       security: *a7
-      summary: Send page
+      summary: Create contact group
       tags: *a8
   /contacts-groups/{id}:
     get:
-      operationId: ContactGroupsControllerV1_getPageByIdV1
+      operationId: ContactsGroupsControllerV1_getContactGroupByIdV1
       parameters:
         - name: id
           required: true
@@ -295,9 +397,69 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ContactDto"
+                $ref: "#/components/schemas/ContactGroupDto"
+        "404":
+          description: Group requested not found
       security: *a7
-      summary: Get Page by ID
+      summary: Get contact groups
+      tags: *a8
+    put:
+      operationId: ContactsGroupsControllerV1_updateAdministratorGroupV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Contact group ID
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Contact group DTO.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactGroupUpdateDto"
+      responses:
+        "200":
+          description: Contact group updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactGroupDto"
+        "406":
+          description: Contact group could not be update.
+      security: *a7
+      summary: Update an contact group
+      tags: *a8
+    patch:
+      operationId: ContactsGroupsControllerV1_patchContactGroupV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Contact group ID
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Patch operations.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/PatchOperationDto"
+      responses:
+        "200":
+          description: Contact group updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactGroupDto"
+        "406":
+          description: Contact group could not be update.
+      security: *a7
+      summary: Patch an contact group
       tags: *a8
   /pages:
     get:
@@ -413,13 +575,12 @@ paths:
           in: query
           schema:
             type: string
-        - name: offset
+        - name: nextPageToken
           required: false
           in: query
           schema:
-            default: 0
-            example: 0
-            type: number
+            default: null
+            type: string
         - name: limit
           required: false
           in: query
@@ -440,15 +601,28 @@ paths:
       tags: &a13
         - Templates
     post:
-      operationId: TemplatesController_createTemplate
+      operationId: TemplatesController_createTemplateV1
       parameters: []
+      requestBody:
+        required: true
+        description: New Template DTO
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TemplateCreateDto"
       responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplateDto"
         "201":
           description: ""
           content:
             application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/TemplateDto"
       security: *a12
       summary: Create new template
       tags: *a13
@@ -558,6 +732,166 @@ paths:
       summary: Get list of contacts by status
       tags:
         - Contacts
+  /administrators-groups:
+    get:
+      operationId: AdministratorGroupsController_getContactsV1
+      parameters:
+        - name: search
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: nextPageToken
+          required: false
+          in: query
+          schema:
+            default: null
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 50
+            example: 50
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdministratorGroupsDto"
+      security: &a14
+        - bearer: []
+      summary: Get list of administrator's groups
+      tags: &a15
+        - Administrators
+    post:
+      operationId: AdministratorGroupsController_createAdministratorV1
+      parameters: []
+      requestBody:
+        required: true
+        description: New administratorGroup DTO
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdministratorGroupCreateDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdministratorGroupDto"
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdministratorGroupDto"
+      security: *a14
+      summary: Create new administratorGroup
+      tags: *a15
+  /administrators-groups/{id}:
+    get:
+      operationId: AdministratorGroupsController_getAdministratorGroupV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdministratorGroupDto"
+        "404":
+          description: Group requested not found
+      security: *a14
+      summary: Get administrator group by ID
+      tags: *a15
+    delete:
+      operationId: AdministratorGroupsController_deleteAdministratorV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Administrators group ID
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Administrators group deleted successfully.
+        "404":
+          description: Administrators group requested not found.
+        "406":
+          description: Administrators group could not be deleted.
+        "500":
+          description: Administrators group could not be deleted.
+      security: *a14
+      summary: Delete a administrators group
+      tags: *a15
+    put:
+      operationId: AdministratorGroupsController_updateAdministratorGroupV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Administrator group ID
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Administrator group DTO.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdministratorGroupUpdateDto"
+      responses:
+        "200":
+          description: Administrator group updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdministratorGroupDto"
+        "406":
+          description: Administrator group could not be update.
+      security: *a14
+      summary: Update an administrator group
+      tags: *a15
+    patch:
+      operationId: AdministratorGroupsController_patchAdministratorGroupV1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Administrator group ID
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Patch operations.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/PatchOperationDto"
+      responses:
+        "200":
+          description: Administrator group updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdministratorGroupDto"
+        "406":
+          description: Administrator group could not be update.
+      security: *a14
+      summary: Patch an administrator group
+      tags: *a15
 info:
   title: OnPage API
   description: >-
@@ -585,7 +919,7 @@ components:
       bearerFormat: JWT
       type: http
   schemas:
-    DispatcherPermissions:
+    AdministratorPermissions:
       type: object
       properties:
         createEscalation:
@@ -640,29 +974,26 @@ components:
           type: boolean
           description: Can login to reports
           default: false
-    DispatcherDto:
+    AdministratorDto:
       type: object
       properties:
         id:
           type: number
-          description: Dispatcher ID
-        opid:
-          type: string
-          description: OnPage ID
+          description: Administrator ID
         firstName:
           type: string
-          description: Dispatcher first name
+          description: Administrator first name
         lastName:
           type: string
-          description: Dispatcher last name
+          description: Administrator last name
         email:
           type: string
-          description: Dispatcher email address
+          description: Administrator email address
         phoneNumber:
           type: string
-          description: Dispatcher phone number
+          description: Administrator phone number
         groups:
-          description: Groups the dispatcher is member of
+          description: Groups the administrator is member of
           type: array
           items:
             type: number
@@ -671,12 +1002,11 @@ components:
           description: Super admin flag
           default: false
         permissions:
-          description: Dispatcher permissions
+          description: Administrator permissions
           allOf:
-            - $ref: "#/components/schemas/DispatcherPermissions"
+            - $ref: "#/components/schemas/AdministratorPermissions"
       required:
         - id
-        - opid
         - firstName
         - lastName
         - email
@@ -685,10 +1015,10 @@ components:
     Metadata:
       type: object
       properties:
-        hasMoreData:
-          type: boolean
+        nextPageToken:
+          type: string
       required:
-        - hasMoreData
+        - nextPageToken
     AdministratorsDto:
       type: object
       properties:
@@ -696,7 +1026,7 @@ components:
           description: Array of administrators
           type: array
           items:
-            $ref: "#/components/schemas/DispatcherDto"
+            $ref: "#/components/schemas/AdministratorDto"
         metadata:
           description: Response metadata
           allOf:
@@ -704,6 +1034,72 @@ components:
       required:
         - administrators
         - metadata
+    AdministratorCreateDto:
+      type: object
+      properties:
+        password:
+          type: string
+          description: Administrator password
+        firstName:
+          type: string
+          description: Administrator first name
+        lastName:
+          type: string
+          description: Administrator last name
+        email:
+          type: string
+          description: Administrator email address
+        phoneNumber:
+          type: string
+          description: Administrator phone number
+        groups:
+          description: Groups the administrator is member of
+          type: array
+          items:
+            type: number
+        superAdmin:
+          type: boolean
+          description: Super admin flag
+          default: false
+        permissions:
+          description: Administrator permissions
+          allOf:
+            - $ref: "#/components/schemas/AdministratorPermissions"
+      required:
+        - password
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+        - permissions
+    AdministratorUpdateDto:
+      type: object
+      properties:
+        password:
+          type: string
+          description: Administrator password
+        firstName:
+          type: string
+          description: Administrator first name
+        lastName:
+          type: string
+          description: Administrator last name
+        phoneNumber:
+          type: string
+          description: Administrator phone number
+        groups:
+          description: Groups the administrator is member of
+          type: array
+          items:
+            type: number
+        superAdmin:
+          type: boolean
+          description: Super admin flag
+          default: false
+        permissions:
+          description: Administrator permissions
+          allOf:
+            - $ref: "#/components/schemas/AdministratorPermissions"
     CreateAttachmentDto:
       type: object
       properties:
@@ -784,6 +1180,51 @@ components:
       required:
         - contacts
         - metadata
+    ContactCreateDto:
+      type: object
+      properties:
+        opid:
+          type: string
+          description: OnPage ID
+        firstName:
+          type: string
+          description: Contact first name
+        lastName:
+          type: string
+          description: Contact last name
+        email:
+          type: string
+          description: Contact email address
+        password:
+          type: string
+          description: Contact password
+        phoneNumber:
+          type: string
+          description: Contact phone number
+      required:
+        - opid
+        - firstName
+        - lastName
+        - email
+        - password
+        - phoneNumber
+    IdResponseDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: ID
+      required:
+        - id
+    ContactCreateResponseDto:
+      type: object
+      properties:
+        contact:
+          description: Contact
+          allOf:
+            - $ref: "#/components/schemas/IdResponseDto"
+      required:
+        - contact
     ContactGroupMemberDto:
       type: object
       properties:
@@ -857,7 +1298,10 @@ components:
           description: OnPage ID (OPID)
         name:
           type: string
-          description: Name
+          description: Group name
+        description:
+          type: string
+          description: Group description
         contacts:
           description: Contacts of the group
           type: array
@@ -899,51 +1343,105 @@ components:
       required:
         - contacts
         - metadata
-    PagePriority:
-      type: string
-      enum:
-        - HIGH
-        - LOW
-    PageSendDto:
+    ContactGroupCreateDto:
       type: object
       properties:
-        chatId:
-          type: number
-          description: Chat ID
-        subject:
+        opid:
           type: string
-          description: Subject
-        body:
+          description: OnPage ID (OPID)
+        name:
           type: string
-          description: Body
-        priority:
-          description: Priority
-          default: HIGH
+          description: Group name
+        description:
+          type: string
+          description: Group description
+        contacts:
+          description: Contacts of the group
+          type: array
+          items:
+            $ref: "#/components/schemas/ContactGroupMemberDto"
+        escalation:
+          type: boolean
+          description: Escalation flag
+        escalationInterval:
+          description: Escalation interval
           allOf:
-            - $ref: "#/components/schemas/PagePriority"
-        recipients:
-          description: Recipients' OPIDs
-          type: array
-          items:
-            type: string
-        replies:
-          description: Possible replies
-          type: array
-          items:
-            type: string
-        attachments:
-          description: Attachments ID's list
-          type: array
-          items:
-            type: string
-        callbackUri:
-          type: string
-          description: Callback URI
+            - $ref: "#/components/schemas/ESCALATION_INTERVAL_DTO"
+        escalationFactor:
+          description: Escalation factor
+          allOf:
+            - $ref: "#/components/schemas/ESCALATION_FACTOR"
+        failOver:
+          description: Fail over parameters
+          allOf:
+            - $ref: "#/components/schemas/GroupFailOverDto"
       required:
-        - chatId
-        - subject
-        - priority
-        - recipients
+        - opid
+        - name
+        - contacts
+        - escalation
+    ContactGroupUpdateDto:
+      type: object
+      properties:
+        opid:
+          type: string
+          description: OnPage ID (OPID)
+        name:
+          type: string
+          description: Group name
+        description:
+          type: string
+          description: Group description
+        contacts:
+          description: Contacts of the group
+          type: array
+          items:
+            $ref: "#/components/schemas/ContactGroupMemberDto"
+        escalation:
+          type: boolean
+          description: Escalation flag
+        escalationInterval:
+          description: Escalation interval
+          allOf:
+            - $ref: "#/components/schemas/ESCALATION_INTERVAL_DTO"
+        escalationFactor:
+          description: Escalation factor
+          allOf:
+            - $ref: "#/components/schemas/ESCALATION_FACTOR"
+        failOver:
+          description: Fail over parameters
+          allOf:
+            - $ref: "#/components/schemas/GroupFailOverDto"
+      required:
+        - opid
+        - name
+        - contacts
+        - escalation
+    PatchOperationDto:
+      type: object
+      properties:
+        op:
+          type: string
+          description: The operation to be performed
+          enum:
+            - add
+            - remove
+            - replace
+            - move
+            - copy
+            - test
+        path:
+          type: string
+          description: A JSON Pointer that indicates the location to perform the operation
+        value:
+          type: object
+          description: The value to be used for the operation (if applicable)
+        from:
+          type: string
+          description: The source location for move or copy operations (if applicable)
+      required:
+        - op
+        - path
     PageFromDto:
       type: object
       properties:
@@ -970,6 +1468,11 @@ components:
         - type
         - caption
         - value
+    PagePriority:
+      type: string
+      enum:
+        - HIGH
+        - LOW
     RecipientDto:
       type: object
       properties:
@@ -1059,6 +1562,46 @@ components:
       required:
         - pages
         - metadata
+    PageSendDto:
+      type: object
+      properties:
+        chatId:
+          type: number
+          description: Chat ID
+        subject:
+          type: string
+          description: Subject
+        body:
+          type: string
+          description: Body
+        priority:
+          description: Priority
+          default: HIGH
+          allOf:
+            - $ref: "#/components/schemas/PagePriority"
+        recipients:
+          description: Recipients' OPIDs
+          type: array
+          items:
+            type: string
+        replies:
+          description: Possible replies
+          type: array
+          items:
+            type: string
+        attachments:
+          description: Attachments ID's list
+          type: array
+          items:
+            type: string
+        callbackUri:
+          type: string
+          description: Callback URI
+      required:
+        - chatId
+        - subject
+        - priority
+        - recipients
     SettingsDto:
       type: object
       properties:
@@ -1110,11 +1653,11 @@ components:
         syncToDevice:
           type: boolean
           description: Sync to device flag
+          default: false
       required:
         - id
         - name
         - subject
-        - predefinedReplies
     TemplatesDto:
       type: object
       properties:
@@ -1130,6 +1673,30 @@ components:
       required:
         - templates
         - metadata
+    TemplateCreateDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Template name
+        subject:
+          type: string
+          description: Template subject
+        body:
+          type: string
+          description: Template body
+        predefinedReplies:
+          description: Predefined replies
+          type: array
+          items:
+            type: string
+        syncToDevice:
+          type: boolean
+          description: Sync to device flag
+          default: false
+      required:
+        - name
+        - subject
     TemplateUpdateDto:
       type: object
       properties:
@@ -1187,3 +1754,62 @@ components:
       required:
         - contactsStatus
         - metadata
+    AdministratorGroupDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Administrator group ID
+        name:
+          type: string
+          description: Administrator group name
+        administrators:
+          description: List of administrator IDs in the group
+          type: array
+          items:
+            type: number
+      required:
+        - id
+        - name
+        - administrators
+    AdministratorGroupsDto:
+      type: object
+      properties:
+        groups:
+          description: Administrator groups
+          type: array
+          items:
+            $ref: "#/components/schemas/AdministratorGroupDto"
+        metadata:
+          description: Response metadata
+          allOf:
+            - $ref: "#/components/schemas/Metadata"
+      required:
+        - groups
+        - metadata
+    AdministratorGroupCreateDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Administrator group name
+        administrators:
+          description: List of administrator IDs.
+          type: array
+          items:
+            type: number
+      required:
+        - name
+    AdministratorGroupUpdateDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Administrator group name
+        administrators:
+          description: List of administrator IDs.
+          type: array
+          items:
+            type: number
+      required:
+        - name

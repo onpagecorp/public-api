@@ -6,13 +6,13 @@ import { PageDto } from '../dto/page-dto';
 import { AttachmentShortDto } from '../dto/attachment-short-dto';
 import { RecipientDto, RecipientTypeDto } from '../dto/recipient-dto';
 import { PageFromDto, PageFromType } from '../dto/page-from-dto';
-import { PagePriority, PageSendDto } from '../dto/page-send-dto';
+import { PageSendDto, PagePriority } from '../dto/page-send-dto';
 import { Utils } from 'src/utils';
+import { Paginator } from '../paginator/paginator';
 
 @Injectable()
 export class PagesService {
-  private static readonly NewApiMessage =
-    Entities.sequelize.models.NewApiMessage;
+  private static readonly NewApiMessage = Entities.sequelize.models.NewApiMessage;
   private readonly logger = new Logger(PagesService.name);
 
   async findAllPagesByDispatcherId(
@@ -22,29 +22,23 @@ export class PagesService {
     limit: number
   ): Promise<PagesListDto> {
     const metadata: Metadata = {
-      hasMoreData: false
+      nextPageToken: null
     };
 
     const result: PagesListDto = { pages: [], metadata };
 
     let counter = 0;
+    const paginator = Paginator.init();
 
     const pushContactToResult = async (message: any) => {
-      const shortAttachmentsDto = await this.getMessageShortAttachments(
-        message.id
-      );
+      const shortAttachmentsDto = await this.getMessageShortAttachments(message.id);
       const recipientsDto = await this.getMessageRecipientsDto(message.id);
 
       const messageSender = await this.getMessageSender(message);
 
-      result.pages.push(
-        PageDto.convertDbMessageToPageDto(
-          message,
-          shortAttachmentsDto,
-          recipientsDto,
-          messageSender
-        )
-      );
+      result.pages.push(PageDto.convertDbMessageToPageDto(message, shortAttachmentsDto, recipientsDto, messageSender));
+
+      paginator.set<number>('lastMessageId', message.id);
 
       counter++;
     };
@@ -81,7 +75,7 @@ export class PagesService {
 
     for (const message of messages) {
       if (counter >= limit) {
-        result.metadata.hasMoreData = true;
+        result.metadata.nextPageToken = paginator.getPaginationToken();
         break;
       }
       await pushContactToResult(message.toJSON());
@@ -106,8 +100,7 @@ export class PagesService {
 
       if (
         parsedRecipients.escalationGroupRecipients.length > 0 &&
-        (parsedRecipients.regularGroupRecipients.length > 0 ||
-          parsedRecipients.individualRecipients.length > 0)
+        (parsedRecipients.regularGroupRecipients.length > 0 || parsedRecipients.individualRecipients.length > 0)
       ) {
         throw new Error('Escalation group has to be the only recipient type.');
       }
@@ -131,8 +124,7 @@ export class PagesService {
 
   private async persistMessageRequest(pageSendDto: PageSendDto) {
     try {
-      const type =
-        pageSendDto.priority === PagePriority.HIGH ? 'PAGE' : 'MESSAGE';
+      const type = pageSendDto.priority === PagePriority.HIGH ? 'PAGE' : 'MESSAGE';
 
       let newApiMessage = await PagesService.NewApiMessage.create({
         subject: pageSendDto.subject,
@@ -165,9 +157,7 @@ export class PagesService {
    * @param {number} messageId - The ID of the message for which attachments are to be fetched.
    * @return {Promise<Object[]>} A promise that resolves to an array of attachments in JSON format.
    */
-  private async getMessageShortAttachments(
-    messageId: number
-  ): Promise<AttachmentShortDto[]> {
+  private async getMessageShortAttachments(messageId: number): Promise<AttachmentShortDto[]> {
     const NpsAttachment = Entities.sequelize.models.NpsAttachment;
     const attachments = await NpsAttachment.findAll({
       where: {
@@ -176,7 +166,7 @@ export class PagesService {
       attributes: ['fileId', 'fileName', 'fileSize']
     });
 
-    return attachments.map((attachment) => {
+    return attachments.map(attachment => {
       return {
         id: attachment.fileId,
         name: attachment.fileName,
@@ -189,11 +179,10 @@ export class PagesService {
    * Fetches the list of recipients for a given message by its ID.
    *
    * @param {number} messageId - The unique identifier of the message for which the recipients are to be retrieved.
-   * @return {Promise<RecipientDto[]>} A promise that resolves to an array of RecipientDto objects, each containing recipient details.
+   * @return {Promise<RecipientDto[]>} A promise that resolves to an array of RecipientDto objects, each containing
+   *   recipient details.
    */
-  private async getMessageRecipientsDto(
-    messageId: number
-  ): Promise<RecipientDto[]> {
+  private async getMessageRecipientsDto(messageId: number): Promise<RecipientDto[]> {
     const recipients: RecipientDto[] = [];
     try {
       const NpsMessageRecipient = Entities.sequelize.models.NpsMessageRecipient;
@@ -229,43 +218,28 @@ export class PagesService {
    * Determines and returns the sender information for a given message.
    *
    * @param {any} message - The message object containing details to identify the sender.
-   * @return {Promise<PageFromDto>} A promise that resolves to an instance of PageFromDto, with details such as type, caption, and value of the sender.
+   * @return {Promise<PageFromDto>} A promise that resolves to an instance of PageFromDto, with details such as type,
+   *   caption, and value of the sender.
    */
   private async getMessageSender(message: any): Promise<PageFromDto> {
     this.logger.debug(`getMessageSender: ${JSON.stringify(message)}`);
 
-    const createPageFromDto = (
-      type: PageFromType,
-      caption: string,
-      value: string | number
-    ): PageFromDto =>
+    const createPageFromDto = (type: PageFromType, caption: string, value: string | number): PageFromDto =>
       Object.assign(new PageFromDto(), { type, caption, value });
 
     try {
       if (!message) {
         // Default case for invalid messages
-        return createPageFromDto(
-          PageFromType.ONPAGE,
-          'OnPage Service',
-          'OnPage Service'
-        );
+        return createPageFromDto(PageFromType.ONPAGE, 'OnPage Service', 'OnPage Service');
       }
 
       // Handle various `creationBy` cases
       switch (message.creationBy) {
         case 4:
-          return createPageFromDto(
-            PageFromType.EMAIL,
-            `Email ${message.emailInfo}`,
-            message.emailInfo
-          );
+          return createPageFromDto(PageFromType.EMAIL, `Email ${message.emailInfo}`, message.emailInfo);
 
         case 3:
-          return createPageFromDto(
-            PageFromType.PHONE,
-            'Phone System',
-            'Phone System'
-          );
+          return createPageFromDto(PageFromType.PHONE, 'Phone System', 'Phone System');
 
         case 6:
           if (message.Dispatcher) {
@@ -324,18 +298,10 @@ export class PagesService {
       }
 
       // Default case for unhandled scenarios
-      return createPageFromDto(
-        PageFromType.ONPAGE,
-        'OnPage Service',
-        'OnPage Service'
-      );
+      return createPageFromDto(PageFromType.ONPAGE, 'OnPage Service', 'OnPage Service');
     } catch (err) {
       this.logger.error(err.message, err.stack);
-      return createPageFromDto(
-        PageFromType.ONPAGE,
-        'OnPage Service',
-        'OnPage Service'
-      );
+      return createPageFromDto(PageFromType.ONPAGE, 'OnPage Service', 'OnPage Service');
     }
   }
 }

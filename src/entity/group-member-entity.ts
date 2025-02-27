@@ -9,14 +9,14 @@ export class GroupMemberEntity {
     nullable: false,
     name: 'group_id'
   })
-  groupId: bigint;
+  groupId: number;
 
   @PrimaryColumn({
     type: 'bigint',
     nullable: false,
     name: 'account_id'
   })
-  accountId: bigint;
+  accountId: number;
 
   @Column({
     type: 'smallint',

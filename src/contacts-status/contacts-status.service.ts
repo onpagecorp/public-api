@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ContactsStatusDto } from '../dto/contacts-status-dto';
 import { entity as Entities } from '@onpage-corp/onpage-domain-mysql';
 import { Metadata } from '../interfaces/metadata.interface';
+import { Paginator } from "../paginator/paginator";
 
 @Injectable()
 export class ContactsStatusService {
@@ -26,7 +27,7 @@ export class ContactsStatusService {
     limit: number = 10
   ): Promise<ContactsStatusDto> {
     const metadata: Metadata = {
-      hasMoreData: false
+      nextPageToken: null
     };
 
     const result: ContactsStatusDto = {
@@ -39,6 +40,7 @@ export class ContactsStatusService {
     };
 
     let counter = 0;
+    const paginator = Paginator.init();
 
     const collectLoggedOffContacts =
       !filter || filter.trim() === '' || filter === 'logged-out';
@@ -106,7 +108,7 @@ export class ContactsStatusService {
 
     for (const account of accounts) {
       if (counter >= offset * limit + limit) {
-        result.metadata.hasMoreData = true;
+        result.metadata.nextPageToken = paginator.getPaginationToken();
         break;
       }
       await pushContactToResult(account);

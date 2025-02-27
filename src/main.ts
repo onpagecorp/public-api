@@ -6,10 +6,13 @@ import { writeFileSync } from 'fs';
 import { join } from 'path';
 import * as YAML from 'yaml';
 import * as packageJson from '../package.json';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   app.enableCors({
     origin: '*', // Change this to your frontend's domain for security

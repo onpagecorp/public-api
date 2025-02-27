@@ -1,9 +1,4 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  ValueTransformer
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ValueTransformer } from 'typeorm';
 import { Logger } from '@nestjs/common';
 
 export class EscalationIntervalTransformer implements ValueTransformer {
@@ -11,9 +6,7 @@ export class EscalationIntervalTransformer implements ValueTransformer {
 
   // Convert database value (integer) to enum when fetching
   from(value: number): ESCALATION_INTERVAL {
-    this.logger.debug(
-      `EscalationIntervalTransformer: ${value}: ${typeof value}`
-    );
+    this.logger.debug(`EscalationIntervalTransformer: ${value}: ${typeof value}`);
     if (value === 1) {
       return ESCALATION_INTERVAL['1 minute'];
     } else if (value === 2) {
@@ -114,14 +107,14 @@ export class GroupEntity {
     type: 'bigint',
     name: 'group_id'
   })
-  id: bigint;
+  id: number;
 
   @Column({
     type: 'bigint',
     nullable: false,
     name: 'enterprise_id'
   })
-  enterpriseId: bigint;
+  enterpriseId: number;
 
   @Column({
     type: 'varchar',
@@ -130,6 +123,15 @@ export class GroupEntity {
     name: 'name'
   })
   name: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: false,
+    default: '',
+    length: 512,
+    name: 'description'
+  })
+  description: string;
 
   @Column({
     type: 'boolean',
@@ -141,7 +143,7 @@ export class GroupEntity {
   @Column({
     type: 'smallint',
     nullable: true,
-    name: 'escalation',
+    name: 'escalation_interval',
     transformer: new EscalationIntervalTransformer()
   })
   escalationInterval: ESCALATION_INTERVAL;
@@ -198,6 +200,14 @@ export class GroupEntity {
     name: 'fail_report_original_message'
   })
   failOverIncludeOriginalMessage: boolean;
+
+  @Column({
+    type: 'datetime',
+    default: Date.now(),
+    nullable: false,
+    name: 'latest_revision_ts'
+  })
+  latestRevision: Date;
 }
 
 export enum ESCALATION_INTERVAL {

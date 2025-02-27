@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class DispatcherPermissions {
+export class AdministratorPermissions {
   @ApiProperty({
     description: 'Can create escalation group',
     required: false,

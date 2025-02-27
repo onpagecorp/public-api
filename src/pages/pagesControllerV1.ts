@@ -13,21 +13,14 @@ import {
   Req,
   Version
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOkResponse,
-  ApiOperation,
-  ApiQuery,
-  ApiTags
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Constants } from '../constants';
 import { Request } from 'express';
 import { PagesService } from './pages.service';
 import { PagesListDto } from '../dto/pages-list-dto';
 import { PageDto } from '../dto/page-dto';
-import { PageSendDto } from '../dto/page-send-dto';
 import { ContactDto } from '../dto/contact-dto';
+import { PageSendDto } from '../dto/page-send-dto';
 
 @ApiBearerAuth()
 @ApiTags('Pages')
@@ -63,17 +56,9 @@ export class PagesControllerV1 {
   @Version('1')
   async getPagesV1(
     @Req() request: Request,
-    @Query(
-      'offset',
-      new DefaultValuePipe(Constants.API_DEFAULT_OFFSET),
-      new ParseIntPipe()
-    )
+    @Query('offset', new DefaultValuePipe(Constants.API_DEFAULT_OFFSET), new ParseIntPipe())
     offset?: number,
-    @Query(
-      'limit',
-      new DefaultValuePipe(Constants.API_DEFAULT_LIMIT),
-      new ParseIntPipe()
-    )
+    @Query('limit', new DefaultValuePipe(Constants.API_DEFAULT_LIMIT), new ParseIntPipe())
     limit?: number
   ): Promise<PagesListDto> {
     return await this.pagesService.findAllPagesByDispatcherId(
@@ -91,14 +76,8 @@ export class PagesControllerV1 {
   @ApiBody({ type: PageSendDto, description: 'send Page DTO' })
   @ApiOkResponse({ type: PageDto })
   @Version('1')
-  async sendPagesV1(
-    @Req() request: Request,
-    @Body() page: PageSendDto
-  ): Promise<PageDto> {
-    return await this.pagesService.sendPage(
-      request['auth-enterprise-id'],
-      page
-    );
+  async sendPagesV1(@Req() request: Request, @Body() page: PageSendDto): Promise<PageDto> {
+    return await this.pagesService.sendPage(request['auth-enterprise-id'], page);
   }
 
   @Get(':id')
@@ -107,16 +86,10 @@ export class PagesControllerV1 {
   })
   @ApiOkResponse({ type: ContactDto })
   @Version('1')
-  async getPageByIdV1(
-    @Param('id') id: number,
-    @Req() request: Request
-  ): Promise<PageDto> {
+  async getPageByIdV1(@Param('id') id: number, @Req() request: Request): Promise<PageDto> {
     throw new NotImplementedException();
 
-    const pageDto = await this.pagesService.getPageById(
-      request['auth-enterprise-id'],
-      id
-    );
+    const pageDto = await this.pagesService.getPageById(request['auth-enterprise-id'], id);
 
     if (!pageDto) {
       throw new NotFoundException();
