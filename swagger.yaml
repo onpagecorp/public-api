@@ -198,22 +198,6 @@ paths:
       security: *a3
       summary: Get an attachment
       tags: *a4
-    delete:
-      operationId: AttachmentsController_deleteAttachmentV1
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "204":
-          description: Attachment deleted successfully
-        "404":
-          description: Attachment requested not found
-      security: *a3
-      summary: Delete an attachment
-      tags: *a4
   /contacts:
     get:
       operationId: ContactsController_getContactsV1

@@ -1,8 +1,6 @@
 import {
   Controller,
-  Delete,
   Get,
-  HttpCode,
   Logger,
   NotFoundException,
   Param,
@@ -15,7 +13,6 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
-  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -56,9 +53,7 @@ export class AttachmentsController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiOkResponse({ type: CreateAttachmentDto })
   @Version('1')
-  async createAttachmentV1(
-    @UploadedFile() file: Express.Multer.File
-  ): Promise<CreateAttachmentDto> {
+  async createAttachmentV1(@UploadedFile() file: Express.Multer.File): Promise<CreateAttachmentDto> {
     return await this.attachmentsService.createAttachment(file);
   }
 
@@ -69,13 +64,17 @@ export class AttachmentsController {
   @ApiNotFoundResponse({ description: 'Attachment not found' })
   @Version('1')
   async getAttachmentV1(@Param('id') id: string): Promise<AttachmentDto> {
-    const attachment: AttachmentDto =
-      await this.attachmentsService.getAttachmentByFileId(id);
+    const attachment: AttachmentDto = await this.attachmentsService.getAttachmentByFileId(id);
     if (!attachment) {
       throw new NotFoundException();
     }
     return attachment;
   }
+
+  /*
+  OnPage delete unassigned attachments every 24h
+  We should not allow to user to remove attachment as it can be already
+  assigned to some message
 
   @Delete(':id')
   @ApiOperation({
@@ -92,4 +91,5 @@ export class AttachmentsController {
       throw new NotFoundException();
     }
   }
+  */
 }

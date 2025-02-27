@@ -8,8 +8,7 @@ export class PatchOperationDto {
   op: string;
 
   @ApiProperty({
-    description:
-      'A JSON Pointer that indicates the location to perform the operation'
+    description: 'A JSON Pointer that indicates the location to perform the operation'
   })
   path: string;
 
@@ -20,8 +19,7 @@ export class PatchOperationDto {
   value?: any;
 
   @ApiProperty({
-    description:
-      'The source location for move or copy operations (if applicable)',
+    description: 'The source location for move or copy operations (if applicable)',
     required: false
   })
   from?: string;

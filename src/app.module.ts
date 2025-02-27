@@ -28,6 +28,7 @@ import { ContactsStatusService } from './contacts-status/contacts-status.service
 import { ContactsStatusModule } from './contacts-status/contacts-status.module';
 import { AdministratorGroupsController } from './administrator-groups/administrator-groups.controller';
 import { AdministratorGroupsService } from './administrator-groups/administrator-groups.service';
+import { AppConfigService } from './app-config-service/app-config.service';
 
 @Module({
   imports: [
@@ -45,6 +46,10 @@ import { AdministratorGroupsService } from './administrator-groups/administrator
       database: DbConfig.db.name,
       autoLoadEntities: true
       // synchronize: true, // Use only in development
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true, // Makes config available everywhere
+      envFilePath: `.env.${process.env.NODE_ENV || 'development'}` // Loads correct .env file
     }),
     ContactsGroupsModule,
     SettingsModule,
@@ -67,6 +72,7 @@ import { AdministratorGroupsService } from './administrator-groups/administrator
     AppService,
     ContactsService,
     AdministratorsService,
+    AppConfigService,
     {
       provide: 'APP_GUARD',
       useClass: AuthGuard
@@ -76,7 +82,9 @@ import { AdministratorGroupsService } from './administrator-groups/administrator
     SettingsService,
     PagesService,
     ContactsStatusService,
-    AdministratorGroupsService
-  ]
+    AdministratorGroupsService,
+    AppConfigService
+  ],
+  exports: [AppService]
 })
 export class AppModule {}

@@ -456,9 +456,7 @@ export class ContactsService {
   ): Promise<ContactGroupDto> {
     const groupToBeUpdated: ContactGroupDto = await this.getContactGroupByIdV1(enterpriseId, contactGroupId);
 
-    // Apply the patch operations to the item
     const patchedItem = applyPatch(groupToBeUpdated, patchOperations, false).newDocument;
-    this.logger.debug(`patchedItem: ${JSON.stringify(patchedItem)}`);
 
     return await this.updateContactGroupV1(enterpriseId, contactGroupId, patchedItem);
   }

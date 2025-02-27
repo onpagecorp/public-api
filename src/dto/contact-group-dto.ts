@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 import { ContactGroupMemberDto } from './contact-group-member-dto';
 
 export enum ESCALATION_INTERVAL_DTO {

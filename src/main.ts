@@ -35,10 +35,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('API') // Optional: Tags for grouping
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }) // Optional: Add authentication support
-    .addServer(
-      `http://127.0.0.1:${configService.get<number>('PORT')}`,
-      'Development Server'
-    )
+    .addServer(`http://127.0.0.1:${configService.get<number>('PORT')}`, 'Development Server')
     .addServer('https://public-api.onsetmobile.com', 'Sandbox Server')
     .addServer('https://public-api.onpage.com', 'Production Server')
     .build();
@@ -67,7 +64,9 @@ async function bootstrap() {
     res.sendFile(join(__dirname, '..', 'public', 'favicon-32x32.png'));
   });
 
-  await app.listen(process.env.PORT ?? 3003);
+  const port = configService.get<number>('PORT', 3007);
+
+  await app.listen(process.env.PORT ?? port);
 }
 
 bootstrap();
